@@ -49,21 +49,24 @@ h1{
     height: 70px;
     width: 90px;
     background-color: salmon;
-    
+    float:left;
+  
 }
 
 svg{
     width: 100%;
+    height: 600px;
     background-color: white;
 
 }
 
 rect {
-    fill: white;
+    
     stroke: blue;
-    stroke-width: 4;
+    
   }
 circle{
-    fill:chartreuse;
+    
     stroke:crimson;
+    
 }
