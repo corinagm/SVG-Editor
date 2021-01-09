@@ -13,33 +13,27 @@
             <h1> EDITOR SVG</h1>
         </div>
 
-        <div class="leftside">
-           <button id="RectButton" class="Button" onclick=drawingManager.drawRect()> Rectangle</button>
-            <button id="CircleButton" class="Button" onclick=drawingManager.drawCircle()> Circle</button>
-            <button id="LineButton" class="Button" onclick=drawingManager.drawLine()> Line</button> 
+        <div class="leftside" role="button">
+
+            <button id="RectButton" class="Button" onclick=drawingManager.drawRect()> Rectangle</button>
+            <button id="CircleButton" class="Button" onclick=drawingManager.drawCircle()> Circle </button>
+            <button id="LineButton" class="Button" onclick=drawingManager.drawLine()> Line</button>
+
             <a>Stroke Line:
-                <select  id="stroke">                
-                <option value="thin">Thin</option>
-                <option value="middle">Middle</option>
-                <option value="thick">Thick</option>
-                
-              </select>
+                <select id="stroke">
+                    <option value="thin">Thin</option>
+                    <option value="middle">Middle</option>
+                    <option value="thick">Thick</option>
+
+                </select>
             </a>
             <a> Color:
-                <select  id="color">                
+                <select id="color">
                     <option value="red">Red</option>
                     <option value="yellow">Yellow</option>
                     <option value="green">Green</option>
-                    <option value="blue">Blue</option>          
-                  </select> </a>
-            
-
-            <!-- <select id="shape">
-                
-                <option value="rect">Recangle</option>
-                <option value="ircle">Circle</option>
-              </select>-->
-
+                    <option value="blue">Blue</option>
+                </select> </a>
         </div>
 
         <div id="svgDiv" class="middleside">
@@ -53,7 +47,6 @@
             <button id="DeleteButton" class="Button" onclick=drawingManager.onDeleteClicked()> Delete </button>
             <button id="SaveButton" class="Button"> Save</button>
             <button id="MoveButton" class="Button" onclick=drawingManager.moveTheElement()>Move Element</button>
-            
         </div>
     </div>
 
@@ -76,11 +69,11 @@
 
         //         svg.appendChild(circle);
         //     });
-       
+
        // CircleButton.onclick =drawingManager.drawCircle();
        // RectButton.onclick = drawingManager.drawRect()
-    </script> 
-       
+    </script>
+
 </body>
 
 </html>

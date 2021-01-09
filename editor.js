@@ -1,184 +1,182 @@
-/*class RectangleElement {
-    constructor(element) {
-        this.element = element;
-        this.svgns = "http://www.w3.org/2000/svg";
-    }
-    drawRect(x, y) {
-        this.createRect();
-        this.element.appendChild(this.svg);
-    }
-    createRect() {
-        this.svg = document.createElementNS(this.svgnsm, 'rect');
-    }
-
-}*/
-
-
-
 class DrawingManager {
 
+constructor(domElement) 
+{
+    this.domElement = domElement;
+
+    this.svgns = "http://www.w3.org/2000/svg";
+    this.svg = document.createElementNS(this.svgns, "svg");
+    this.domElement.appendChild(this.svg);
+
+    this.width = this.domElement.clientWidth;
+    this.height = this.domElement.clientHeight;
+    this.svg.setAttribute('width', "100%"); //note: this.svg.width is readonly
+    this.svg.setAttribute('height', "400");
+    this.svg.setAttribute('style', 'border-top: 2px solid black; border-bottom: 2px solid black');
 
 
-    constructor(domElement) {
-        this.domElement = domElement;
+    this.currentClickHandler = null;
+    this.objects = [];
+    this.currentSelectedElement = null;
+    this.isAnyObjectMoving = false;
+    this.currentMovingElement = null;
+    this.stroke=document.getElementById('stroke');
+    this.color=document.getElementById('color');
+}
 
-        this.svgns = "http://www.w3.org/2000/svg";
-        this.svg = document.createElementNS(this.svgns, "svg");
-        this.domElement.appendChild(this.svg);
+drawCircle()
+{
+    
+    if (this.currentClickHandler)
+        this.svg.removeEventListener("click", this.currentClickHandler);
 
-        this.width = this.domElement.clientWidth;
-        this.height = this.domElement.clientHeight;
-        this.svg.setAttribute('width', "100%"); //note: this.svg.width is readonly
-        this.svg.setAttribute('height', "400");
-        this.svg.setAttribute('style', 'border-top: 2px solid black; border-bottom: 2px solid black');
+    let handler = (e) => {
+        const pt = this.svg.createSVGPoint();
+        //coord
+        pt.x = e.clientX;
+        pt.y = e.clientY;
 
+        const svgP = pt.matrixTransform(this.svg.getScreenCTM().inverse());
 
-        this.currentClickHandler = null;
-        this.objects = [];
-        this.currentSelectedElement = null;
-        this.isAnyObjectMoving = false;
-        this.currentMovingElement = null;
-        this.stroke=document.getElementById('stroke');
-        this.color=document.getElementById('color');
-    }
+        const circle = document.createElementNS(this.svgns, 'circle');
+        circle.setAttribute('cx', svgP.x);
+        circle.setAttribute('cy', svgP.y);
+        circle.setAttribute('r', 65);
 
-
-
-
-    drawCircle() {
-        //this.svg.removeEventListener("click");
-        if (this.currentClickHandler)
-            this.svg.removeEventListener("click", this.currentClickHandler);
-
-        let handler = (e) => {
-            const pt = this.svg.createSVGPoint();
-            //coord
-            pt.x = e.clientX;
-            pt.y = e.clientY;
-
-            const svgP = pt.matrixTransform(this.svg.getScreenCTM().inverse());
-
-            const circle = document.createElementNS(this.svgns, 'circle');
-            circle.setAttribute('cx', svgP.x);
-            circle.setAttribute('cy', svgP.y);
-            circle.setAttribute('r', 65);
-
-            let strokeWidth=0;
-            switch(this.stroke.value) {
-                case 'thin': strokeWidth=1; break;
-                case 'middle': strokeWidth=3; break; 
-                case 'thick': strokeWidth=5; break;
-                
-            }          
-            circle.setAttribute('stroke-width', strokeWidth);
-
-           
-            switch(this.color.value) { 
-                case 'red': circle.setAttribute('fill','red'); break;
-                case 'yellow': circle.setAttribute('fill', 'yellow'); break;
-                case 'green': circle.setAttribute('fill', 'green'); break;
-                case 'blue': circle.setAttribute('fill', 'blue'); break;   
-            }
+        let strokeWidth=0;
+        switch(this.stroke.value) {
+            case 'thin': strokeWidth=1; break;
+            case 'middle': strokeWidth=3; break; 
+            case 'thick': strokeWidth=5; break;
             
+        }          
+        circle.setAttribute('stroke-width', strokeWidth);
 
-            this.svg.appendChild(circle);
-            this.objects.push(circle);
-
-
+        
+        switch(this.color.value) { 
+            case 'red': circle.setAttribute('fill','red'); break;
+            case 'yellow': circle.setAttribute('fill', 'yellow'); break;
+            case 'green': circle.setAttribute('fill', 'green'); break;
+            case 'blue': circle.setAttribute('fill', 'blue'); break;   
         }
+        
 
-        this.currentClickHandler = handler;
+        this.svg.appendChild(circle);
+        this.objects.push(circle);
 
-        this.svg.addEventListener("click", handler);
+
     }
 
-    drawLine() {
-        if (this.currentClickHandler)
-            this.svg.removeEventListener("click", this.currentClickHandler);
-        let handler = (e1, e2) => {
+    this.currentClickHandler = handler;
 
-            //STARTING POINT
-            const startingPt = this.svg.createSVGPoint();
-            //coord
-            startingPt.x = e1.clientX;
-            startingPt.y = e1.clientY;
+    this.svg.addEventListener("click", handler);
+}
 
-            const startingSvgPt = startingPt.matrixTransform(this.svg.getScreenCTM().inverse());
+drawLine()
+    {
+    if (this.currentClickHandler)
+        this.svg.removeEventListener("click", this.currentClickHandler);
+    let handler = (e) => {
 
-            // ENDING POINT
-            const endingPt = this.svg.createSVGPoint();
-            //coord
-            endingPt.x = e2.clientX;
-            endingPt.y = e2.clientY;
+        //STARTING POINT
+        const startingPt = this.svg.createSVGPoint();
+        //coord
+        startingPt.x = e.clientX+50;
+        startingPt.y = e.clientY+50;
 
-            const endingSvgPt = endingPt.matrixTransform(this.svg.getScreenCTM().inverse());
+        const startingSvgPt = startingPt.matrixTransform(this.svg.getScreenCTM().inverse());
 
-            //CREATING LINE
-            const line = document.createElementNS(this.svgns, 'line');
-            line.setAttribute('x1', startingSvgPt.x);
-            line.setAttribute('x2', endingSvgPt.x);
-            line.setAttribute('y1', startingSvgPt.y);
-            line.setAttribute('y2', endingSvgPt.y);
-            line.setAttribute('stroke-width', 5);
-            line.setAttribute('stroke', blue);
+        // ENDING POINT
+        const endingPt = this.svg.createSVGPoint();
+        //coord
+        endingPt.x = e.clientX-50;
+        endingPt.y = e.clientY-50;
 
+        const endingSvgPt = endingPt.matrixTransform(this.svg.getScreenCTM().inverse());
 
+        //CREATING LINE
+        const line = document.createElementNS(this.svgns, 'line');
 
-            this.svg.appendChild(line);
-            this.objects.push(circle);
+        line.setAttribute('x1', startingSvgPt.x);
+        line.setAttribute('x2', endingSvgPt.x);
+        line.setAttribute('y1', startingSvgPt.y);
+        line.setAttribute('y2', endingSvgPt.y);
+        
+        let strokeWidth=0;
+        switch(this.stroke.value) {
+            case 'thin': strokeWidth=4; break;
+            case 'middle': strokeWidth=7; break; 
+            case 'thick': strokeWidth=10; break;
+            
+        }          
+        line.setAttribute('stroke-width', strokeWidth);
+
+        
+        switch(this.color.value) { 
+            case 'red': line.setAttribute('stroke','red'); break;
+            case 'yellow': line.setAttribute('stroke', 'yellow'); break;
+            case 'green': line.setAttribute('stroke', 'green'); break;
+            case 'blue': line.setAttribute('stroke', 'blue'); break;   
         }
-        this.currentClickHandler = handler;
 
-        this.svg.addEventListener("click", handler);
+
+        this.svg.appendChild(line);
+        this.objects.push(line);
+    }
+    this.currentClickHandler = handler;
+
+    this.svg.addEventListener("click", handler);
+}
+
+drawRect() 
+{
+    if (this.currentClickHandler)
+        this.svg.removeEventListener("click", this.currentClickHandler);
+
+    let handler = (e) => {
+        const pt = this.svg.createSVGPoint();
+        //coord
+        pt.x = e.clientX;
+        pt.y = e.clientY;
+
+        const svgP = pt.matrixTransform(this.svg.getScreenCTM().inverse());
+
+        const rect = document.createElementNS(this.svgns, 'rect');
+        rect.setAttribute('x', svgP.x);
+        rect.setAttribute('y', svgP.y);
+        rect.setAttribute('width', 60);
+        rect.setAttribute('height', 80);
+        // rect.id = "button";
+        let strokeWidth=0;
+        switch(this.stroke.value) {
+            case 'thin': strokeWidth=1; break;
+            case 'middle': strokeWidth=3; break; 
+            case 'thick': strokeWidth=5; break;
+            
+        }
+        
+        rect.setAttribute('stroke-width', strokeWidth);
+        
+        switch(this.color.value) { 
+        case 'red': rect.setAttribute('fill','red'); break;
+        case 'yellow': rect.setAttribute('fill', 'yellow'); break;
+        case 'green': rect.setAttribute('fill', 'green'); break;
+        case 'blue': rect.setAttribute('fill', 'blue'); break;   
     }
 
-    drawRect() {
-        if (this.currentClickHandler)
-            this.svg.removeEventListener("click", this.currentClickHandler);
-
-        let handler = (e) => {
-            const pt = this.svg.createSVGPoint();
-            //coord
-            pt.x = e.clientX;
-            pt.y = e.clientY;
-
-            const svgP = pt.matrixTransform(this.svg.getScreenCTM().inverse());
-
-            const rect = document.createElementNS(this.svgns, 'rect');
-            rect.setAttribute('x', svgP.x);
-            rect.setAttribute('y', svgP.y);
-            rect.setAttribute('width', 60);
-            rect.setAttribute('height', 80);
-           // rect.id = "button";
-           let strokeWidth=0;
-           switch(this.stroke.value) {
-               case 'thin': strokeWidth=1; break;
-               case 'middle': strokeWidth=3; break; 
-               case 'thick': strokeWidth=5; break;
-               
-           }
-           
-           rect.setAttribute('stroke-width', strokeWidth);
-           
-           switch(this.color.value) { 
-            case 'red': rect.setAttribute('fill','red'); break;
-            case 'yellow': rect.setAttribute('fill', 'yellow'); break;
-            case 'green': rect.setAttribute('fill', 'green'); break;
-            case 'blue': rect.setAttribute('fill', 'blue'); break;   
-        }
-
-            this.svg.appendChild(rect);
-            this.objects.push(rect);
+        this.svg.appendChild(rect);
+        this.objects.push(rect);
 
 
-        }
-
-        this.currentClickHandler = handler;
-
-        this.svg.addEventListener('click', handler);
     }
 
-onSelectedButtonClicked() {
+    this.currentClickHandler = handler;
+
+    this.svg.addEventListener('click', handler);
+}
+
+onSelectedButtonClicked() 
+{
     if (this.currentClickHandler)
         this.svg.removeEventListener("click", this.currentClickHandler);
 
@@ -193,51 +191,6 @@ onSelectedButtonClicked() {
                     console.log("element selectat");
                     this.currentSelectedElement = this.objects[i];
                 }, false);
-                /*
-                    //MOUSE DOWN    
-                        this.objects[i].addEventListener("mousedown", (e) => {
-                        this.isAnyObjectMoving = true;
-                        console.log("mouseDown");
-                        let p = this.svg.createSVGPoint();
-                        p.x = e.clientX;
-                        p.y = e.clientY;
-                
-                        // if(this.objects[i].tagNAme=="rect")
-                        var element = this.objects[i].getScreenCTM();
-                        p = p.matrixTransform(element.inverse());
-                        nMouseOffsetX = p.x - parseInt(this.objects[i].getAttribute("x"));
-                        nMouseOffsetY = p.y - parseInt(this.objects[i].getAttribute("y"));
-                    });
-    
-                    //MOUSE MOVE
-                    this.objects[i].addEventListener("mousemove", (e) => {
-    
-                        console.log("mouseMove");
-    
-                        let p = this.svg.createSVGPoint();
-                        p.x = e.clientX;
-                        p.y = e.clientY;
-                        var bClient = true;
-    
-                        if (this.isAnyObjectMoving) {
-                            if(this.objects[i])
-                                {var element = this.objects[i].getScreenCTM();
-                                p = p.matrixTransform(element.inverse());
-                                this.objects[i].setAttribute("x", p.x - nMouseOffsetX);
-                                this.objects[i].setAttribute("y", p.y - nMouseOffsetY);
-                                bClient = false;
-                            }
-                        }
-    
-                    });
-    
-    
-                    //MOUSE UP  
-                    this.objects[i].addEventListener("mouseup", (e) => {
-                        console.log("mouseUp");
-                        this.isAnyObjectMoving = false;
-                    });*/
-
             }
         }
     }
@@ -246,7 +199,8 @@ onSelectedButtonClicked() {
     this.svg.addEventListener('click', handler);
 }
 
-moveTheElement() {
+moveTheElement() 
+{
     if (this.currentClickHandler)
         this.svg.removeEventListener("click", this.currentClickHandler);
 
@@ -255,7 +209,8 @@ moveTheElement() {
             for (let i = 0; i < this.objects.length; ++i) {
                 var nMouseOffsetX = 0;
                 var nMouseOffsetY = 0;
-
+                var nMouseOffsetX2=0;
+                var nMouseOffsetY2=0;
 
                 //MOUSE DOWN    
                 this.objects[i].addEventListener("mousedown", (e) => {
@@ -264,12 +219,47 @@ moveTheElement() {
                     let p = this.svg.createSVGPoint();
                     p.x = e.clientX;
                     p.y = e.clientY;
+                    let tagName=this.objects[i].tagName;
 
-                    // if(this.objects[i].tagNAme=="rect")
-                    var element = this.objects[i].getScreenCTM();
-                    p = p.matrixTransform(element.inverse());
-                    nMouseOffsetX = p.x - parseInt(this.objects[i].getAttribute("cx"));
-                    nMouseOffsetY = p.y - parseInt(this.objects[i].getAttribute("cy"));
+                    if(tagName=="circle")
+                    {
+                        var element = this.objects[i].getScreenCTM();
+                        p = p.matrixTransform(element.inverse());
+                        nMouseOffsetX = p.x - parseInt(this.objects[i].getAttribute("cx"));
+                        nMouseOffsetY = p.y - parseInt(this.objects[i].getAttribute("cy"));
+                    }
+                    else if(tagName=="rect")
+                    {
+                        var element = this.objects[i].getScreenCTM();
+                        p = p.matrixTransform(element.inverse());
+                        nMouseOffsetX = p.x - parseInt(this.objects[i].getAttribute("x"));
+                        nMouseOffsetY = p.y - parseInt(this.objects[i].getAttribute("y"));
+                        
+                    }
+                    else if(tagName=="line"){
+                        let p1 = this.svg.createSVGPoint();
+                        let p2 = this.svg.createSVGPoint();
+
+                        p1.x = e.clientX+50;
+                        p1.y = e.clientY+50;
+                        p2.x=e.clientX-50;
+                        p2.y = e.clientY-50;
+
+                        let tagName=this.objects[i].tagName;
+
+
+                        var element = this.objects[i].getScreenCTM();
+                        p1 = p1.matrixTransform(element.inverse());
+                        //p2 = p2.matrixTransform(element.inverse());
+
+
+
+
+                        nMouseOffsetX = p1.x - parseInt(this.objects[i].getAttribute("x1"));
+                        nMouseOffsetY = p1.y - parseInt(this.objects[i].getAttribute("y1"));
+                        nMouseOffsetX2= p2.x - parseInt(this.objects[i].getAttribute("x2"));
+                        nMouseOffsetY2=p2.y - parseInt(this.objects[i].getAttribute("y2"));
+                    }
                 });
 
                 //MOUSE MOVE
@@ -277,18 +267,67 @@ moveTheElement() {
 
                     console.log("mouseMove");
 
-                    let p = this.svg.createSVGPoint();
-                    p.x = e.clientX;
-                    p.y = e.clientY;
-                    var bClient = true;
+                   // let p = this.svg.createSVGPoint();
+                  //  p.x = e.clientX;
+                  //  p.y = e.clientY;
+                  //  var bClient = true;
 
                     if (this.isAnyObjectMoving) {
                         if (this.objects[i]) {
-                            var element = this.objects[i].getScreenCTM();
-                            p = p.matrixTransform(element.inverse());
-                            this.objects[i].setAttribute("cx", p.x - nMouseOffsetX);
-                            this.objects[i].setAttribute("cy", p.y - nMouseOffsetY);
-                            bClient = false;
+                            let tagName=this.objects[i].tagName;
+                            if(tagName=="circle")
+                            {
+                                let p = this.svg.createSVGPoint();
+                                p.x = e.clientX;
+                                p.y = e.clientY;
+                                var bClient = true;
+
+
+                                var element = this.objects[i].getScreenCTM();
+                                p = p.matrixTransform(element.inverse());
+                                this.objects[i].setAttribute("cx", p.x - nMouseOffsetX);
+                                this.objects[i].setAttribute("cy", p.y - nMouseOffsetY);
+                                bClient = false;
+                            }
+                            else if(tagName=="rect")
+                            {
+                                let p = this.svg.createSVGPoint();
+                                p.x = e.clientX;
+                                p.y = e.clientY;
+                                var bClient = true;
+
+
+                                var element = this.objects[i].getScreenCTM();
+                                p = p.matrixTransform(element.inverse());
+                                this.objects[i].setAttribute("x", p.x - nMouseOffsetX);
+                                this.objects[i].setAttribute("y", p.y - nMouseOffsetY);
+                                
+
+                                bClient = false;
+                            }
+                            else if(tagName=="line")
+                            {
+                                let p1 = this.svg.createSVGPoint();
+                                p1.x = e.clientX;
+                                p1.y = e.clientY;
+
+                                let p2=this.svg.createSVGPoint();
+                                p2.x=e.clientX-50;
+                                p2.y=e.clientY-50;
+                                var bClient = true;
+
+                                var element = this.objects[i].getScreenCTM();
+                                p1 = p1.matrixTransform(element.inverse());
+                               // p2 = p2.matrixTransform(element.inverse());
+
+                                this.objects[i].setAttribute("x1", p1.x - nMouseOffsetX);
+                                this.objects[i].setAttribute("y1", p1.y - nMouseOffsetY);
+                                this.objects[i].setAttribute("x2",p1.x- nMouseOffsetX2)
+                                this.objects[i].setAttribute("y2",p1.y - nMouseOffsetY2)
+
+                                bClient = false;
+                            }
+                            
                         }
                     }
 
@@ -309,11 +348,11 @@ moveTheElement() {
     this.svg.addEventListener('click', handler);
 
 }
-onDeleteClicked() {
+
+onDeleteClicked() 
+{
     if (this.currentSelectedElement)
         this.currentSelectedElement.remove();
 }
-
-
 
 }
