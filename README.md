@@ -1,1 +1,1 @@
-# SVG-Editor
+# Graphical Editor using html svg component
