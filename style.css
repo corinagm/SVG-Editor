@@ -4,47 +4,48 @@ body, html {
     margin: 0;
   }
   
-  .container {
-    width: 100%;
-    height: 100%;
-  }
-  
-  
-  .leftside {
-      width: 10%;
-      height: 100%;
-      float: left;
-      background-color: rosybrown;
-      border-collapse: collapse;
-  }
+.container {
+  width: 100%;
+  height: 100%;
+}
 
-  
-  .middleside {
-      width: 80%;
-      height: 100%;
-      float: left;
-      background-color:rosybrown;
-      border-collapse: collapse;
-  }
-  
-  .rightside {
+
+.leftside {
     width: 10%;
     height: 100%;
-    position: relative;
-    float: right;
+    float: left;
     background-color: rosybrown;
     border-collapse: collapse;
-  }
-  
-  .topside {
-    width: 100%;
-    height: 100px;
+}
+
+
+.middleside {
+    width: 80%;
+    height: 100%;
+    float: left;
+    background-color:rosybrown;
     border-collapse: collapse;
-    background-color:pink;
-  }
+}
+
+.rightside {
+  width: 10%;
+  height: 100%;
+  position: relative;
+  float: right;
+  background-color: rosybrown;
+  border-collapse: collapse;
+}
+
+.topside {
+  width: 100%;
+  height: 100px;
+  border-collapse: collapse;
+  background-color:pink;
+}
 
 h1{
     text-align: center;
+    margin-top: 0mm;
 }
 
 .Button{
@@ -54,22 +55,17 @@ h1{
   display:block;
   border-radius: 12px;
 }
- 
 
 svg{
     width: 100%;
     height: 600px;
     background-color: white;
-
 }
 
 rect {
-    
     stroke: blue;
-    
-  }
+}
+
 circle{
-    
     stroke:crimson;
-    
 }
